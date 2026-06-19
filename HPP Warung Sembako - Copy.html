@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SI-HPP Warung Sembako</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js for beautiful charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for premium look */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .active-nav {
+            background-color: #f0fdf4;
+            color: #166534;
+            border-left: 4px solid #22c55e;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col md:flex-row overflow-x-hidden">
+
+
+    <!-- SIDEBAR FOR DESKTOP & HEADER FOR MOBILE -->
+    <aside class="w-full md:w-64 bg-white border-r border-slate-200 flex flex-col md:h-screen sticky top-0 z-40">
+        <!-- Logo Header -->
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-emerald-500 text-white p-2.5 rounded-xl shadow-md shadow-emerald-200">
+                    <i class="fa-solid fa-store text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-slate-800 leading-tight">SI-HPP</h1>
+                    <span class="text-xs font-semibold text-emerald-600">Warung Sembako</span>
+                </div>
+            </div>
+            <!-- Mobile Menu Toggle Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-slate-600 hover:text-emerald-600 focus:outline-none p-2 rounded-lg hover:bg-slate-100">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav id="sidebar-nav" class="hidden md:flex flex-col flex-1 p-4 space-y-1.5 overflow-y-auto">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all active-nav">
+                <i class="fa-solid fa-chart-pie w-5 text-lg"></i>
+                <span>Dashboard</span>
+            </button>
+            <button onclick="switchTab('bahanbaku')" id="nav-bahanbaku" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all">
+                <i class="fa-solid fa-boxes-stacked w-5 text-lg"></i>
+                <span>Bahan Baku</span>
+            </button>
+            <button onclick="switchTab('tenagakerja')" id="nav-tenagakerja" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all">
+                <i class="fa-solid fa-users w-5 text-lg"></i>
+                <span>Tenaga Kerja</span>
+            </button>
+            <button onclick="switchTab('operasional')" id="nav-operasional" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all">
+                <i class="fa-solid fa-receipt w-5 text-lg"></i>
+                <span>Operasional</span>
+            </button>
+            <button onclick="switchTab('produksibaru')" id="nav-produksibaru" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all">
+                <i class="fa-solid fa-circle-plus w-5 text-lg"></i>
+                <span>Produksi Baru</span>
+            </button>
+            <button onclick="switchTab('laporanhpp')" id="nav-laporanhpp" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all">
+                <i class="fa-solid fa-file-invoice-dollar w-5 text-lg"></i>
+                <span>Laporan HPP</span>
+            </button>
+        </nav>
+
+        <!-- User Info / Quick Footer in Sidebar -->
+        <div class="p-4 border-t border-slate-100 hidden md:block">
+            <div class="bg-slate-50 rounded-2xl p-4 flex items-center space-x-3">
+                <div class="bg-emerald-100 text-emerald-800 font-bold h-10 w-10 rounded-full flex items-center justify-center">
+                    WS
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-slate-800">Owner Sembako</h4>
+                    <p class="text-[10px] text-slate-500">Aplikasi Kasir & HPP</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+
+    <!-- MAIN MAIN WORKSPACE -->
+    <main class="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full overflow-y-auto">
+        <!-- Floating Toast Notification System -->
+        <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col space-y-3"></div>
+
+        <!-- ==================== DASHBOARD VIEW ==================== -->
+        <section id="view-dashboard" class="space-y-8 animate-fade-in">
+            <!-- Header Section -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Dashboard Ringkasan</h2>
+                    <p class="text-sm text-slate-500 mt-1">Status dan metrik utama operasional HPP Warung Sembako Anda.</p>
+                </div>
+                <div class="flex items-center space-x-2 text-xs bg-emerald-50 text-emerald-800 px-3.5 py-1.5 rounded-full font-semibold border border-emerald-200">
+                    <span class="inline-block w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping mr-1"></span>
+                    Sistem Berjalan Aktif
+                </div>
+            </div>
+
+            <!-- Dashboard Stats Widget Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Stat Card 1 -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Bahan Baku</span>
+                        <h3 class="text-2xl font-bold text-slate-800 mt-2" id="stat-total-bahan">0 Item</h3>
+                        <p class="text-xs text-slate-500 mt-1" id="stat-total-bahan-value">Rp0</p>
+                    </div>
+                    <div class="bg-blue-50 text-blue-600 h-12 w-12 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                </div>
+                <!-- Stat Card 2 -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tenaga Kerja</span>
+                        <h3 class="text-2xl font-bold text-slate-800 mt-2" id="stat-total-tenaga">0 Orang</h3>
+                        <p class="text-xs text-slate-500 mt-1">Sistem borongan / bulanan</p>
+                    </div>
+                    <div class="bg-purple-50 text-purple-600 h-12 w-12 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+                <!-- Stat Card 3 -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Biaya Operasional</span>
+                        <h3 class="text-2xl font-bold text-slate-800 mt-2" id="stat-total-operasional">Rp0</h3>
+                        <p class="text-xs text-slate-500 mt-1">Alokasi overhead warung</p>
+                    </div>
+                    <div class="bg-amber-50 text-amber-600 h-12 w-12 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                </div>
+                <!-- Stat Card 4 -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Produk Terformulasi</span>
+                        <h3 class="text-2xl font-bold text-slate-800 mt-2" id="stat-total-produk">0 Produk</h3>
+                        <p class="text-xs text-emerald-600 mt-1" id="stat-avg-margin">Rata-rata Margin: 0%</p>
+                    </div>
+                    <div class="bg-emerald-50 text-emerald-600 h-12 w-12 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-square-poll-vertical"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Bar Chart: HPP vs Harga Jual -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm lg:col-span-2">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-slate-800 text-base">HPP vs Harga Jual Per Produk</h4>
+                        <span class="text-xs text-slate-400">Analisis Margin</span>
+                    </div>
+                    <div class="relative h-80">
+                        <canvas id="chartHppJual"></canvas>
+                    </div>
+                </div>
+
+                <!-- Doughnut Chart: Komposisi Biaya Terakhir -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-slate-800 text-base">Komposisi Biaya Produksi</h4>
+                        <span class="text-xs text-slate-400">Rasio Pengeluaran</span>
+                    </div>
+                    <div class="relative h-80 flex items-center justify-center">
+                        <canvas id="chartBiayaKomposisi"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Production History Summary -->
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-lg">Daftar Produk & Rekomendasi Harga</h4>
+                        <p class="text-xs text-slate-400 mt-0.5">Produk hasil kemas ulang / racikan warung sembako</p>
+                    </div>
+                    <button onclick="switchTab('produksibaru')" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all shadow-md shadow-emerald-100 flex items-center space-x-2">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>Buat Racikan Baru</span>
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="text-slate-400 font-semibold border-b border-slate-100">
+                                <th class="pb-3 text-left">Nama Produk Hasil</th>
+                                <th class="pb-3 text-right">Modal Bahan Baku</th>
+                                <th class="pb-3 text-right">Tenaga Kerja</th>
+                                <th class="pb-3 text-right">Operasional</th>
+                                <th class="pb-3 text-right font-bold text-emerald-600">Total HPP / Unit</th>
+                                <th class="pb-3 text-right font-bold text-blue-600">Saran Harga Jual</th>
+                                <th class="pb-3 text-center">Estimasi Margin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboard-product-table" class="divide-y divide-slate-50">
+                            <!-- Populated via javascript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== BAHAN BAKU VIEW ==================== -->
+        <section id="view-bahanbaku" class="space-y-6 hidden animate-fade-in">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Katalog Bahan Baku / Grosir</h2>
+                    <p class="text-sm text-slate-500 mt-1">Stok & harga modal komoditas sebelum dikemas / diproduksi.</p>
+                </div>
+                <button onclick="openModal('modal-bahanbaku')" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm px-5  py-3 rounded-xl transition-all shadow-md shadow-emerald-100 flex items-center space-x-2">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Tambah Bahan Baku</span>
+                </button>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
+                <div class="relative w-full sm:w-80">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="search-bahan" oninput="filterBahanBaku()" placeholder="Cari nama bahan baku..." class="pl-10 pr-4 py-2.5 w-full bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                </div>
+                <div class="text-xs text-slate-400 font-medium">
+                    Menampilkan <span id="count-bahan" class="font-semibold text-slate-700">0</span> Bahan Baku
+                </div>
+            </div>
+
+            <!-- Grid Cards for Bahan Baku -->
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-50/75 border-b border-slate-100 text-slate-500 font-semibold">
+                                <th class="p-4 pl-6">Nama Bahan Baku</th>
+                                <th class="p-4">Kategori</th>
+                                <th class="p-4 text-right">Harga Beli Terakhir</th>
+                                <th class="p-4 text-center">Stok & Satuan Kemasan Besar</th>
+                                <th class="p-4 text-right">Ekuivalen Satuan Kecil (Konversi)</th>
+                                <th class="p-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-bahanbaku" class="divide-y divide-slate-100">
+                            <!-- Populated via Javascript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== TENAGA KERJA VIEW ==================== -->
+        <section id="view-tenagakerja" class="space-y-6 hidden animate-fade-in">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">SDM & Tenaga Kerja</h2>
+                    <p class="text-sm text-slate-500 mt-1">Kelola pekerja pengemas, asisten, atau sopir pengantar.</p>
+                </div>
+                <button onclick="openModal('modal-tenagakerja')" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm px-5 py-3 rounded-xl transition-all shadow-md shadow-emerald-100 flex items-center space-x-2">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Tambah Tenaga Kerja</span>
+                </button>
+            </div>
+
+            <!-- Labor Dashboard Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left: List -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm lg:col-span-2 space-y-4">
+                    <h3 class="font-bold text-slate-800 text-lg">Daftar Tenaga Kerja Aktif</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="text-slate-400 font-semibold border-b border-slate-100">
+                                    <th class="pb-3 text-left">Nama</th>
+                                    <th class="pb-3 text-left">Sistem Upah</th>
+                                    <th class="pb-3 text-right">Nilai Tarif</th>
+                                    <th class="pb-3 text-center">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-tenagakerja" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right: Information Guide Box -->
+                <div class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-6 rounded-3xl shadow-lg shadow-emerald-100 space-y-4">
+                    <div class="bg-white/20 h-12 w-12 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Perhitungan ke HPP</h3>
+                    <p class="text-xs text-emerald-100 leading-relaxed">
+                        Tenaga kerja di warung sembako umumnya terbagi atas:
+                    </p>
+                    <ul class="text-xs text-emerald-500 bg-white/95 p-4 rounded-2xl space-y-2 font-medium">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                            <span><strong class="text-slate-800">Borongan (Per Unit):</strong> Sangat direkomendasikan untuk membungkus beras/gula eceran. Upah dihitung per bungkus sehingga langsung menambah HPP per unit produk secara presisi.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                            <span><strong class="text-slate-800">Bulanan / Tetap:</strong> Diakumulasikan dan disarankan dibagi rata (di-alokasikan) secara manual dalam menu operasional bulanan.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== OPERASIONAL VIEW ==================== -->
+        <section id="view-operasional" class="space-y-6 hidden animate-fade-in">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Biaya Operasional (Overhead)</h2>
+                    <p class="text-sm text-slate-500 mt-1">Mencatat biaya listrik, transportasi angkutan, plastik isolasi, gas, sewa, dll.</p>
+                </div>
+                <button onclick="openModal('modal-operasional')" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm px-5 py-3 rounded-xl transition-all shadow-md shadow-emerald-100 flex items-center space-x-2">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Catat Biaya Baru</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Operasional List Table -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm lg:col-span-2">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-slate-800 text-lg">Histori / Pengeluaran Bulanan</h3>
+                        <span class="text-xs text-slate-400 font-semibold" id="operasional-total-title">Total: Rp0</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="text-slate-400 font-semibold border-b border-slate-100">
+                                    <th class="pb-3 text-left">Nama Operasional</th>
+                                    <th class="pb-3 text-left">Kategori</th>
+                                    <th class="pb-3 text-right">Nilai Biaya</th>
+                                    <th class="pb-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-operasional" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Explanation / Calculator Tool on Overhead -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                    <div class="bg-amber-50 text-amber-600 h-12 w-12 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base">Alokasi Overhead per Paket</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Agar HPP akurat, sebagian biaya operasional seperti transportasi angkut atau plastik pembungkus luar harus dibebankan pada produk yang dihasilkan.
+                    </p>
+                    <div class="bg-slate-50 p-4 rounded-2xl space-y-2 text-xs">
+                        <span class="font-bold text-slate-700 block">Simulasi Alokasi Biaya:</span>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Total Pengeluaran Bulan Ini</span>
+                            <span class="font-bold text-slate-800" id="calc-overhead-total">Rp0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Estimasi Total Output Unit</span>
+                            <span class="font-bold text-slate-800">1,000 unit</span>
+                        </div>
+                        <hr class="border-dashed border-slate-200 my-1">
+                        <div class="flex justify-between text-emerald-600 font-bold">
+                            <span>Saran Beban Overhead</span>
+                            <span id="calc-overhead-per-unit">Rp0 / unit</span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 italic">
+                        *Gunakan angka saran beban ini sebagai parameter "Beban Operasional" ketika memformulasikan Produksi Baru.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== PRODUKSI BARU VIEW ==================== -->
+        <section id="view-produksibaru" class="space-y-6 hidden animate-fade-in">
+            <div>
+                <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Formula Produksi Baru</h2>
+                <p class="text-sm text-slate-500 mt-1">Gunakan kalkulator ini untuk mengemas ulang, meracik bumbu, atau membuat paket sembako.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- FORMULA BUILDER CARD -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm lg:col-span-2 space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-flask text-emerald-500"></i>
+                            <span>Kalkulator Racikan / Pengemasan</span>
+                        </h3>
+                    </div>
+
+                    <form id="form-produksi" onsubmit="event.preventDefault(); saveProduction();" class="space-y-6">
+                        <!-- Step 1: Informasi Produk -->
+                        <div class="space-y-4">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">1. Informasi Produk Hasil</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Nama Produk Jadi</label>
+                                    <input type="text" id="prod-nama" required placeholder="Contoh: Beras Premium Eceran 1kg" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Total Jumlah Output (Hasil Produksi)</label>
+                                    <div class="relative">
+                                        <input type="number" id="prod-output-qty" value="50" min="1" required oninput="calculateProductionHpp()" class="w-full pl-4 pr-16 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                                        <span class="absolute right-3.5 inset-y-0 flex items-center text-xs font-semibold text-slate-400">Pcs / Bungkus</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Bahan Baku yang Digunakan -->
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">2. Komposisi Bahan Baku Utama</h4>
+                                <button type="button" onclick="addMaterialRowToFormula()" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+                                    <i class="fa-solid fa-plus-circle"></i> Tambah Komponen Bahan
+                                </button>
+                            </div>
+                            
+                            <!-- Container for Dynamic Material Rows -->
+                            <div id="materials-container" class="space-y-3">
+                                <!-- Initial Item Row -->
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Biaya Tenaga Kerja & Operasional -->
+                        <div class="space-y-4">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">3. Alokasi Upah & Operasional Tambahan</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Tenaga Kerja -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Tenaga Kerja Pelaksana</label>
+                                    <select id="prod-tenaga" onchange="calculateProductionHpp()" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                                        <option value="">-- Tanpa Tenaga Kerja (Mandiri) --</option>
+                                        <!-- Dynamically loaded from workers -->
+                                    </select>
+                                </div>
+                                <!-- Operasional / Overhead -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Alokasi Biaya Operasional (Rp / Total Produksi)</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3.5 inset-y-0 flex items-center text-xs font-semibold text-slate-400">Rp</span>
+                                        <input type="number" id="prod-overhead-total" value="5000" min="0" oninput="calculateProductionHpp()" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Markup Margin Profit -->
+                        <div class="space-y-4">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">4. Strategi Harga Jual</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Target Profit Margin (%)</label>
+                                    <div class="relative">
+                                        <input type="number" id="prod-target-margin" value="15" min="1" max="100" oninput="calculateProductionHpp()" class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                                        <span class="absolute right-3.5 inset-y-0 flex items-center text-xs font-semibold text-slate-400">%</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Harga Jual Aktual Diinginkan (Rp)</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3.5 inset-y-0 flex items-center text-xs font-semibold text-slate-400">Rp</span>
+                                        <input type="number" id="prod-harga-jual-manual" min="0" oninput="calculateProductionHpp(true)" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all" placeholder="Atau tentukan bebas...">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-4 border-t border-slate-100 flex justify-end">
+                            <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm px-6 py-3 rounded-xl transition-all shadow-md shadow-emerald-100">
+                                Simpan Formula Produksi ke Laporan HPP
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- LIVE BREAKOUT PANEL -->
+                <div class="space-y-6">
+                    <!-- Live HPP Meter Card -->
+                    <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl space-y-6 relative overflow-hidden">
+                        <div class="absolute -right-6 -bottom-6 text-slate-800 text-9xl font-black opacity-20 pointer-events-none">
+                            HPP
+                        </div>
+                        
+                        <div>
+                            <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Live Kalkulator</span>
+                            <h3 class="font-extrabold text-2xl mt-1">Estimasi HPP Sembako</h3>
+                        </div>
+
+                        <div class="space-y-4 py-4 border-y border-white/10 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Total Biaya Bahan</span>
+                                <span class="font-bold text-slate-200" id="live-total-materials">Rp0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Total Biaya Tenaga Kerja</span>
+                                <span class="font-bold text-slate-200" id="live-total-labor">Rp0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Biaya Operasional</span>
+                                <span class="font-bold text-slate-200" id="live-total-overhead">Rp0</span>
+                            </div>
+                            <hr class="border-white/10">
+                            <div class="flex justify-between text-base">
+                                <span class="text-slate-400 font-medium">Akumulasi Total</span>
+                                <span class="font-extrabold text-emerald-400" id="live-overall-cost">Rp0</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <span class="text-slate-400 text-xs">HPP per Unit</span>
+                                    <p class="text-3xl font-black text-white" id="live-hpp-per-unit">Rp0</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-slate-400 text-xs">Harga Jual (Saran)</span>
+                                    <p class="text-lg font-bold text-amber-400" id="live-suggested-retail">Rp0</p>
+                                </div>
+                            </div>
+                            <div class="flex justify-between text-xs bg-white/5 p-3 rounded-2xl">
+                                <span class="text-slate-400">Perkiraan Keuntungan Bersih:</span>
+                                <span class="font-bold text-emerald-400" id="live-profit-per-unit">Rp0 / unit (<span id="live-actual-margin">0</span>%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informational Warning -->
+                    <div class="bg-blue-50 border border-blue-200 p-6 rounded-3xl space-y-3">
+                        <div class="text-blue-600 text-xl"><i class="fa-solid fa-circle-question"></i></div>
+                        <h4 class="font-bold text-slate-800 text-sm">Mengapa HPP Sangat Penting?</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            Banyak pemilik warung bangkrut karena hanya memikirkan "harga pokok bahan utama" tanpa memperhitungkan plastik isolasi pembungkus, ongkos transport bensin angkut, dan tenaga kerja mengemas. Angka HPP di atas telah memperhitungkan semuanya!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== LAPORAN HPP VIEW ==================== -->
+        <section id="view-laporanhpp" class="space-y-6 hidden animate-fade-in">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Laporan HPP & Kalkulasi Laba</h2>
+                    <p class="text-sm text-slate-500 mt-1">Laporan komprehensif seluruh resep & kemasan produk warung sembako.</p>
+                </div>
+                <!-- Export Mock / Action Buttons -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="window.print()" class="bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm px-4 py-2.5 rounded-xl border border-slate-200 flex items-center space-x-2 transition-all">
+                        <i class="fa-solid fa-print text-xs"></i>
+                        <span>Cetak Laporan</span>
+                    </button>
+                    <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-md flex items-center space-x-2 transition-all">
+                        <i class="fa-solid fa-file-csv text-xs"></i>
+                        <span>Ekspor CSV</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Analytical Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center space-x-4">
+                    <div class="bg-emerald-100 text-emerald-800 h-12 w-12 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Rata-Rata Margin Usaha</span>
+                        <span class="text-xl font-bold text-slate-800" id="report-avg-margin">0%</span>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center space-x-4">
+                    <div class="bg-amber-100 text-amber-800 h-12 w-12 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Komponen Biaya Terbesar</span>
+                        <span class="text-xl font-bold text-slate-800">Bahan Baku (85%)</span>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center space-x-4">
+                    <div class="bg-blue-100 text-blue-800 h-12 w-12 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Total Nilai HPP Produk</span>
+                        <span class="text-xl font-bold text-slate-800" id="report-total-hpp-value">Rp0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HPP Report Table -->
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                    <h3 class="font-bold text-slate-800 text-lg">HPP Detil Produk Jadi</h3>
+                    <button onclick="resetAllData()" class="text-xs font-semibold text-red-500 hover:text-red-600 border border-red-200 hover:bg-red-50 px-3 py-1.5 rounded-xl transition-all">
+                        <i class="fa-solid fa-trash-arrow-up"></i> Atur Ulang Semua Data
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-50/75 border-b border-slate-100 text-slate-500 font-semibold">
+                                <th class="p-4 pl-6">ID / Nama Produk</th>
+                                <th class="p-4 text-center">Output Batch</th>
+                                <th class="p-4 text-right">Biaya Bahan</th>
+                                <th class="p-4 text-right">Biaya Pekerja</th>
+                                <th class="p-4 text-right">Biaya Overhead</th>
+                                <th class="p-4 text-right">HPP / Unit</th>
+                                <th class="p-4 text-right">Harga Jual Terpilih</th>
+                                <th class="p-4 text-center">Margin %</th>
+                                <th class="p-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-laporanhpp" class="divide-y divide-slate-100">
+                            <!-- Populated via Javascript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+
+    <!-- ==================== MODALS ==================== -->
+    
+    <!-- MODAL 1: ADD BAHAN BAKU -->
+    <div id="modal-bahanbaku" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-scale-up">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800 text-lg">Tambah Bahan Baku Grosir</h3>
+                <button onclick="closeModal('modal-bahanbaku')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="form-bahanbaku" onsubmit="event.preventDefault(); submitBahanBaku();" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Bahan Baku Grosir</label>
+                    <input type="text" id="bb-nama" required placeholder="Contoh: Beras Karung Cianjur 50kg, Gula Pasir 50kg" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Kategori</label>
+                        <select id="bb-kategori" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                            <option value="Sembako Pokok">Sembako Pokok</option>
+                            <option value="Bumbu Dapur">Bumbu Dapur</option>
+                            <option value="Kemasan / Pembungkus">Kemasan / Pembungkus</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Harga Beli Grosir (Rp)</label>
+                        <input type="number" id="bb-harga" required min="1" placeholder="Contoh: 650000" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Satuan Kemasan Grosir</label>
+                        <input type="text" id="bb-satuan-besar" required placeholder="Contoh: Karung, Jerigen, Pack" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Kapasitas Ekuivalen Konversi</label>
+                        <input type="number" id="bb-konversi-nilai" required min="1" placeholder="Contoh: 50" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Satuan Hasil Ecer Kecil</label>
+                    <input type="text" id="bb-satuan-kecil" required placeholder="Contoh: Kg, Liter, Pcs" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                </div>
+                <p class="text-[11px] text-slate-400 italic">
+                    *Sistem otomatis membagi Harga Grosir dengan Kapasitas Ekuivalen untuk mendeteksi Harga Modal per Satuan Kecil.
+                </p>
+                <div class="pt-2 border-t border-slate-100 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('modal-bahanbaku')" class="px-4 py-2 text-slate-500 hover:bg-slate-50 rounded-xl text-sm font-semibold">Batal</button>
+                    <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm px-4 py-2.5 rounded-xl transition-all shadow-md shadow-emerald-100">Simpan Bahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ADD TENAGA KERJA -->
+    <div id="modal-tenagakerja" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-scale-up">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800 text-lg">Tambah Tenaga Kerja / Pekerja</h3>
+                <button onclick="closeModal('modal-tenagakerja')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="form-tenagakerja" onsubmit="event.preventDefault(); submitTenagaKerja();" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Lengkap Pekerja</label>
+                    <input type="text" id="tk-nama" required placeholder="Contoh: Pak Budi Kemas" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Sistem Upah Kerjaan</label>
+                    <select id="tk-tipe" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                        <option value="Borongan">Borongan per Unit Hasil (Sangat Presisi untuk HPP)</option>
+                        <option value="Bulanan">Harian / Bulanan Tetap</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Nilai Tarif Upah (Rp)</label>
+                    <input type="number" id="tk-tarif" required min="1" placeholder="Contoh: 500 (untuk borongan per bungkus)" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('modal-tenagakerja')" class="px-4 py-2 text-slate-500 hover:bg-slate-50 rounded-xl text-sm font-semibold">Batal</button>
+                    <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm px-4 py-2.5 rounded-xl transition-all shadow-md shadow-emerald-100">Simpan Pekerja</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ADD OPERASIONAL -->
+    <div id="modal-operasional" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-scale-up">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800 text-lg">Catat Biaya Operasional / Overhead</h3>
+                <button onclick="closeModal('modal-operasional')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="form-operasional" onsubmit="event.preventDefault(); submitOperasional();" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Nama / Jenis Pengeluaran</label>
+                    <input type="text" id="op-nama" required placeholder="Contoh: Isian Gas Tabung LPG, Angkut Pickup Beras" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Kategori Biaya</label>
+                    <select id="op-kategori" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                        <option value="Energi (Listrik/Gas)">Energi (Listrik/Gas)</option>
+                        <option value="Transportasi & Logistik">Transportasi & Logistik</option>
+                        <option value="Peralatan Penunjang">Peralatan Penunjang (Isolasi/Karet/Tali)</option>
+                        <option value="Sewa Tempat / Lainnya">Sewa Tempat / Lainnya</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Besar Pengeluaran (Rp)</label>
+                    <input type="number" id="op-biaya" required min="1" placeholder="Contoh: 150000" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:bg-white transition-all">
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('modal-operasional')" class="px-4 py-2 text-slate-500 hover:bg-slate-50 rounded-xl text-sm font-semibold">Batal</button>
+                    <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm px-4 py-2.5 rounded-xl transition-all shadow-md shadow-emerald-100">Simpan Biaya</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== CONTROLLER & APP LOGIC ==================== -->
+    <script>
+        
+        // --- 1. SEED/INITIAL APP STATE ---
+        const DEFAULT_BAHAN_BAKU = [
+            { id: "bb-1", nama: "Beras Karung Cianjur 50kg", kategori: "Sembako Pokok", harga: 650000, satuanBesar: "Karung", konversi: 50, satuanKecil: "Kg" },
+            { id: "bb-2", nama: "Minyak Goreng Sawit Jerigen 20L", kategori: "Sembako Pokok", harga: 280000, satuanBesar: "Jerigen", konversi: 20, satuanKecil: "Liter" },
+            { id: "bb-3", nama: "Gula Pasir Karung Putih 50kg", kategori: "Sembako Pokok", harga: 700000, satuanBesar: "Karung", konversi: 50, satuanKecil: "Kg" },
+            { id: "bb-4", nama: "Plastik Tebal Kemasan 1kg", kategori: "Kemasan / Pembungkus", harga: 25000, satuanBesar: "Pack", konversi: 100, satuanKecil: "Pcs" },
+            { id: "bb-5", nama: "Botol Kosong Plastik 1L", kategori: "Kemasan / Pembungkus", harga: 60000, satuanBesar: "Dus", konversi: 50, satuanKecil: "Pcs" }
+        ];
+
+        const DEFAULT_TENAGA_KERJA = [
+            { id: "tk-1", nama: "Pak Budi Kemas", tipe: "Borongan", tarif: 500 },
+            { id: "tk-2", nama: "Siti Helper Warung", tipe: "Borongan", tarif: 400 },
+            { id: "tk-3", nama: "Andi Kurir Logistik", tipe: "Bulanan", tarif: 1500000 }
+        ];
+
+        const DEFAULT_OPERASIONAL = [
+            { id: "op-1", nama: "Isian Gas LPG 3kg Operasional", kategori: "Energi (Listrik/Gas)", biaya: 22000 },
+            { id: "op-2", nama: "Bensin Sewa Pickup Angkut Sembako", kategori: "Transportasi & Logistik", biaya: 120000 },
+            { id: "op-3", nama: "Listrik Toko Bulanan", kategori: "Energi (Listrik/Gas)", biaya: 150000 },
+            { id: "op-4", nama: "Lakban & Isolasi Gulung Pack", kategori: "Peralatan Penunjang", biaya: 35000 }
+        ];
+
+        const DEFAULT_PRODUKSI = [
+            {
+                id: "p-1",
+                nama: "Beras Premium Eceran 1kg",
+                qty: 50,
+                bahanGunakan: [
+                    { bahanId: "bb-1", qtyGunakan: 50 }, // 50kg Beras
+                    { bahanId: "bb-4", qtyGunakan: 50 }  // 50pcs Plastik
+                ],
+                tenagaId: "tk-1", // Pak Budi Borongan
+                overheadTotal: 5000,
+                targetMargin: 12,
+                totalBiayaBahan: 662500, // (13000 * 50) + (250 * 50)
+                totalBiayaTenaga: 25000, // 500 * 50
+                totalBiayaOverhead: 5000,
+                totalHpp: 692500,
+                hppPerUnit: 13850,
+                hargaJualPilihan: 15500,
+                marginPersen: 11.9
+            },
+            {
+                id: "p-2",
+                nama: "Minyak Goreng Botolan 1L",
+                qty: 20,
+                bahanGunakan: [
+                    { bahanId: "bb-2", qtyGunakan: 20 }, // 20 Liter Minyak
+                    { bahanId: "bb-5", qtyGunakan: 20 }  // 20 Botol Kosong
+                ],
+                tenagaId: "tk-2", // Siti Helper
+                overheadTotal: 8000,
+                targetMargin: 15,
+                totalBiayaBahan: 304000, // (14000*20) + (1200*20)
+                totalBiayaTenaga: 8000, // 400 * 20
+                totalBiayaOverhead: 8000,
+                totalHpp: 320000,
+                hppPerUnit: 16000,
+                hargaJualPilihan: 18500,
+                marginPersen: 15.6
+            }
+        ];
+
+        // --- LOCAL STORAGE OR IN-MEMORY INIT ---
+        let appBahanBaku = [...DEFAULT_BAHAN_BAKU];
+        let appTenagaKerja = [...DEFAULT_TENAGA_KERJA];
+        let appOperasional = [...DEFAULT_OPERASIONAL];
+        let appProduksi = [...DEFAULT_PRODUKSI];
+
+        // Load data on window startup
+        window.onload = function() {
+            loadLocalData();
+            initCharts();
+            renderAllViews();
+            
+            // Setup dynamic materials list in Form Produksi
+            resetMaterialsFormula();
+            
+            // Manage mobile menu triggers
+            document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+                const nav = document.getElementById('sidebar-nav');
+                nav.classList.toggle('hidden');
+            });
+        }
+
+        function saveToLocal() {
+            localStorage.setItem('si_hpp_bahanbaku', JSON.stringify(appBahanBaku));
+            localStorage.setItem('si_hpp_tenagakerja', JSON.stringify(appTenagaKerja));
+            localStorage.setItem('si_hpp_operasional', JSON.stringify(appOperasional));
+            localStorage.setItem('si_hpp_produksi', JSON.stringify(appProduksi));
+        }
+
+        function loadLocalData() {
+            if (localStorage.getItem('si_hpp_bahanbaku')) {
+                appBahanBaku = JSON.parse(localStorage.getItem('si_hpp_bahanbaku'));
+            }
+            if (localStorage.getItem('si_hpp_tenagakerja')) {
+                appTenagaKerja = JSON.parse(localStorage.getItem('si_hpp_tenagakerja'));
+            }
+            if (localStorage.getItem('si_hpp_operasional')) {
+                appOperasional = JSON.parse(localStorage.getItem('si_hpp_operasional'));
+            }
+            if (localStorage.getItem('si_hpp_produksi')) {
+                appProduksi = JSON.parse(localStorage.getItem('si_hpp_produksi'));
+            }
+        }
+
+        function resetAllData() {
+            if (confirm("Apakah Anda yakin ingin menghapus semua kustomisasi data dan memuat ulang data bawaan awal?")) {
+                localStorage.clear();
+                appBahanBaku = [...DEFAULT_BAHAN_BAKU];
+                appTenagaKerja = [...DEFAULT_TENAGA_KERJA];
+                appOperasional = [...DEFAULT_OPERASIONAL];
+                appProduksi = [...DEFAULT_PRODUKSI];
+                saveToLocal();
+                renderAllViews();
+                updateCharts();
+                showToast("Data berhasil diatur ulang ke default!", "info");
+            }
+        }
+
+        // --- 2. VIEW CONTROLLER (TAB ROUTING) ---
+        function switchTab(tabId) {
+            // Hide all views
+            const views = ['dashboard', 'bahanbaku', 'tenagakerja', 'operasional', 'produksibaru', 'laporanhpp'];
+            views.forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+                document.getElementById('nav-' + v).classList.remove('active-nav');
+            });
+
+            // Show target view
+            document.getElementById('view-' + tabId).classList.remove('hidden');
+            document.getElementById('nav-' + tabId).classList.add('active-nav');
+
+            // Hide mobile menu on selection
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar-nav').classList.add('hidden');
+            }
+
+            // Perform context action on view change
+            if (tabId === 'dashboard') {
+                updateCharts();
+            } else if (tabId === 'produksibaru') {
+                populateProduksiDropdowns();
+                resetMaterialsFormula();
+                calculateProductionHpp();
+            }
+        }
+
+        // --- 3. TOAST & MODAL UTILITIES ---
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bgClass = "bg-emerald-500 text-white";
+            let iconClass = "fa-solid fa-circle-check";
+            if (type === "error") {
+                bgClass = "bg-rose-500 text-white";
+                iconClass = "fa-solid fa-triangle-exclamation";
+            } else if (type === "info") {
+                bgClass = "bg-blue-500 text-white";
+                iconClass = "fa-solid fa-circle-info";
+            }
+
+            toast.className = `${bgClass} flex items-center space-x-3 px-5 py-3.5 rounded-2xl shadow-xl transition-all duration-300 transform translate-y-2 opacity-0 text-sm font-semibold`;
+            toast.innerHTML = `<i class="${iconClass} text-lg"></i> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            // Reflow to trigger transition
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-[-10px]');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Helper: Format Rupiah
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number);
+        }
+
+        // --- 4. RENDER UTILITIES ---
+        function renderAllViews() {
+            renderDashboardStats();
+            renderBahanBakuList();
+            renderTenagaKerjaList();
+            renderOperasionalList();
+            renderLaporanHpp();
+        }
+
+
+        // --- 5. BAHAN BAKU LOGIC ---
+        function renderBahanBakuList() {
+            const container = document.getElementById('table-bahanbaku');
+            container.innerHTML = '';
+
+            appBahanBaku.forEach(bb => {
+                const modalUnit = bb.harga / bb.konversi;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-4 pl-6 font-semibold text-slate-800">${bb.nama}</td>
+                    <td class="p-4"><span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full text-xs font-semibold">${bb.kategori}</span></td>
+                    <td class="p-4 text-right font-medium">${formatRupiah(bb.harga)}</td>
+                    <td class="p-4 text-center text-slate-500">1 ${bb.satuanBesar} (${bb.konversi} ${bb.satuanKecil})</td>
+                    <td class="p-4 text-right"><span class="text-emerald-600 font-bold">${formatRupiah(modalUnit)}</span> <span class="text-xs text-slate-400">/ ${bb.satuanKecil}</span></td>
+                    <td class="p-4 text-center">
+                        <button onclick="deleteBahanBaku('${bb.id}')" class="text-red-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-all">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+
+            document.getElementById('count-bahan').innerText = appBahanBaku.length;
+        }
+
+        function submitBahanBaku() {
+            const nama = document.getElementById('bb-nama').value;
+            const kategori = document.getElementById('bb-kategori').value;
+            const harga = parseFloat(document.getElementById('bb-harga').value);
+            const satuanBesar = document.getElementById('bb-satuan-besar').value;
+            const konversi = parseFloat(document.getElementById('bb-konversi-nilai').value);
+            const satuanKecil = document.getElementById('bb-satuan-kecil').value;
+
+            const newItem = {
+                id: 'bb-' + Date.now(),
+                nama, kategori, harga, satuanBesar, konversi, satuanKecil
+            };
+
+            appBahanBaku.push(newItem);
+            saveToLocal();
+            renderBahanBakuList();
+            renderDashboardStats();
+            closeModal('modal-bahanbaku');
+            document.getElementById('form-bahanbaku').reset();
+            showToast("Bahan baku baru berhasil didaftarkan!");
+        }
+
+        function deleteBahanBaku(id) {
+            // Check if used in production
+            const isUsed = appProduksi.some(p => p.bahanGunakan.some(bg => bg.bahanId === id));
+            if (isUsed) {
+                showToast("Gagal! Bahan baku ini sedang digunakan dalam formula produksi aktif.", "error");
+                return;
+            }
+
+            if (confirm("Hapus bahan baku ini?")) {
+                appBahanBaku = appBahanBaku.filter(bb => bb.id !== id);
+                saveToLocal();
+                renderBahanBakuList();
+                renderDashboardStats();
+                showToast("Bahan baku terhapus.", "info");
+            }
+        }
+
+        function filterBahanBaku() {
+            const query = document.getElementById('search-bahan').value.toLowerCase();
+            const rows = document.getElementById('table-bahanbaku').getElementsByTagName('tr');
+            
+            let visibleCount = 0;
+            for (let row of rows) {
+                const nameText = row.cells[0]?.innerText.toLowerCase();
+                if (nameText && nameText.includes(query)) {
+                    row.style.display = "";
+                    visibleCount++;
+                } else {
+                    row.style.display = "none";
+                }
+            }
+            document.getElementById('count-bahan').innerText = visibleCount;
+        }
+
+        // --- 6. TENAGA KERJA LOGIC ---
+        function renderTenagaKerjaList() {
+            const container = document.getElementById('table-tenagakerja');
+            container.innerHTML = '';
+
+            appTenagaKerja.forEach(tk => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-3 font-semibold text-slate-800">${tk.nama}</td>
+                    <td class="py-3"><span class="${tk.tipe === 'Borongan' ? 'bg-indigo-50 text-indigo-700' : 'bg-amber-50 text-amber-700'} px-2.5 py-1 rounded-full text-xs font-semibold">${tk.tipe}</span></td>
+                    <td class="py-3 text-right font-bold text-slate-700">${formatRupiah(tk.tarif)}${tk.tipe === 'Borongan' ? ' <span class="text-xs text-slate-400 font-normal">/ bungkus</span>' : ' <span class="text-xs text-slate-400 font-normal">/ bulan</span>'}</td>
+                    <td class="py-3 text-center">
+                        <button onclick="deleteTenagaKerja('${tk.id}')" class="text-red-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-all">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+        }
+
+        function submitTenagaKerja() {
+            const nama = document.getElementById('tk-nama').value;
+            const tipe = document.getElementById('tk-tipe').value;
+            const tarif = parseFloat(document.getElementById('tk-tarif').value);
+
+            const newItem = {
+                id: 'tk-' + Date.now(),
+                nama, tipe, tarif
+            };
+
+            appTenagaKerja.push(newItem);
+            saveToLocal();
+            renderTenagaKerjaList();
+            renderDashboardStats();
+            closeModal('modal-tenagakerja');
+            document.getElementById('form-tenagakerja').reset();
+            showToast("Pekerja baru terdaftar!");
+        }
+
+        function deleteTenagaKerja(id) {
+            const isUsed = appProduksi.some(p => p.tenagaId === id);
+            if (isUsed) {
+                showToast("Gagal! Tenaga kerja ini sedang dicatat sebagai penanggung jawab produksi.", "error");
+                return;
+            }
+
+            if (confirm("Hapus pekerja ini dari sistem?")) {
+                appTenagaKerja = appTenagaKerja.filter(tk => tk.id !== id);
+                saveToLocal();
+                renderTenagaKerjaList();
+                renderDashboardStats();
+                showToast("Pekerja terhapus.", "info");
+            }
+        }
+
+        // --- 7. OPERASIONAL LOGIC ---
+        function renderOperasionalList() {
+            const container = document.getElementById('table-operasional');
+            container.innerHTML = '';
+
+            let total = 0;
+            appOperasional.forEach(op => {
+                total += op.biaya;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-3.5 font-semibold text-slate-800">${op.nama}</td>
+                    <td class="py-3.5"><span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full text-xs font-semibold">${op.kategori}</span></td>
+                    <td class="py-3.5 text-right font-bold text-slate-700">${formatRupiah(op.biaya)}</td>
+                    <td class="py-3.5 text-center">
+                        <button onclick="deleteOperasional('${op.id}')" class="text-red-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-all">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+
+            document.getElementById('operasional-total-title').innerText = `Total: ${formatRupiah(total)}`;
+            document.getElementById('calc-overhead-total').innerText = formatRupiah(total);
+            
+            // Assume 1000 average units output for warung per month as divider
+            const costPerUnit = total / 1000;
+            document.getElementById('calc-overhead-per-unit').innerText = `${formatRupiah(costPerUnit)} / unit`;
+        }
+
+        function submitOperasional() {
+            const nama = document.getElementById('op-nama').value;
+            const kategori = document.getElementById('op-kategori').value;
+            const biaya = parseFloat(document.getElementById('op-biaya').value);
+
+            const newItem = {
+                id: 'op-' + Date.now(),
+                nama, kategori, biaya
+            };
+
+            appOperasional.push(newItem);
+            saveToLocal();
+            renderOperasionalList();
+            renderDashboardStats();
+            closeModal('modal-operasional');
+            document.getElementById('form-operasional').reset();
+            showToast("Biaya operasional berhasil dicatat!");
+        }
+
+        function deleteOperasional(id) {
+            if (confirm("Hapus pengeluaran operasional ini?")) {
+                appOperasional = appOperasional.filter(op => op.id !== id);
+                saveToLocal();
+                renderOperasionalList();
+                renderDashboardStats();
+                showToast("Operasional terhapus.", "info");
+            }
+        }
+
+
+        // --- 8. FORMULA PRODUKSI BARU SYSTEM ---
+        let formulaMaterialCount = 0;
+
+        function populateProduksiDropdowns() {
+            // Pekerja dropdown
+            const selectTk = document.getElementById('prod-tenaga');
+            selectTk.innerHTML = '<option value="">-- Tanpa Tenaga Kerja (Mandiri) --</option>';
+            appTenagaKerja.forEach(tk => {
+                selectTk.innerHTML += `<option value="${tk.id}">${tk.nama} (${tk.tipe}: ${formatRupiah(tk.tarif)})</option>`;
+            });
+        }
+
+        function resetMaterialsFormula() {
+            const container = document.getElementById('materials-container');
+            container.innerHTML = '';
+            formulaMaterialCount = 0;
+            
+            // Add initial 1 row of component
+            addMaterialRowToFormula();
+        }
+
+        function addMaterialRowToFormula() {
+            formulaMaterialCount++;
+            const id = 'formula-row-' + formulaMaterialCount;
+            const container = document.getElementById('materials-container');
+
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = "flex flex-col sm:flex-row gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100 relative group transition-all";
+            
+            // Populate select options
+            let options = '<option value="">-- Pilih Bahan Baku --</option>';
+            appBahanBaku.forEach(bb => {
+                const modalUnit = bb.harga / bb.konversi;
+                options += `<option value="${bb.id}" data-price="${modalUnit}" data-unit="${bb.satuanKecil}">${bb.nama} (${formatRupiah(modalUnit)}/${bb.satuanKecil})</option>`;
+            });
+
+            div.innerHTML = `
+                <div class="flex-1">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Pilih Komponen Bahan</label>
+                    <select onchange="updateFormulaRowUnit('${id}')" class="material-select w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-emerald-400">
+                        ${options}
+                    </select>
+                </div>
+                <div class="w-full sm:w-36">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Jumlah Pemakaian</label>
+                    <div class="relative">
+                        <input type="number" step="any" min="0.01" value="1" oninput="calculateProductionHpp()" class="material-qty w-full pl-3 pr-10 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-emerald-400">
+                        <span class="material-unit-label absolute right-3 inset-y-0 flex items-center text-xs font-semibold text-slate-400">-</span>
+                    </div>
+                </div>
+                <div class="w-full sm:w-40 flex flex-col justify-end text-right">
+                    <span class="text-[10px] text-slate-400 block font-bold mb-1">Subtotal Modal</span>
+                    <span class="material-subtotal-val font-bold text-slate-700 text-sm py-2">Rp0</span>
+                </div>
+                <button type="button" onclick="removeMaterialRow('${id}')" class="sm:absolute -top-2 -right-2 bg-rose-500 hover:bg-rose-600 text-white h-7 w-7 rounded-full flex items-center justify-center shadow-lg opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                    <i class="fa-solid fa-minus text-xs"></i>
+                </button>
+            `;
+            container.appendChild(div);
+            calculateProductionHpp();
+        }
+
+        function removeMaterialRow(rowId) {
+            const rows = document.querySelectorAll('#materials-container > div');
+            if (rows.length <= 1) {
+                showToast("Formula minimal harus menggunakan 1 komponen bahan baku utama.", "error");
+                return;
+            }
+            document.getElementById(rowId).remove();
+            calculateProductionHpp();
+        }
+
+        function updateFormulaRowUnit(rowId) {
+            const row = document.getElementById(rowId);
+            const select = row.querySelector('.material-select');
+            const selectedOption = select.options[select.selectedIndex];
+            
+            const unit = selectedOption.getAttribute('data-unit') || '-';
+            row.querySelector('.material-unit-label').innerText = unit;
+            
+            calculateProductionHpp();
+        }
+
+        function calculateProductionHpp(manualPriceChanged = false) {
+            const outputQty = Math.max(1, parseFloat(document.getElementById('prod-output-qty').value) || 1);
+            const selectedWorkerId = document.getElementById('prod-tenaga').value;
+            const overheadInput = parseFloat(document.getElementById('prod-overhead-total').value) || 0;
+            const marginTarget = parseFloat(document.getElementById('prod-target-margin').value) || 0;
+
+            // 1. Calculate materials subtotal
+            let totalMaterialsCost = 0;
+            const rows = document.querySelectorAll('#materials-container > div');
+            
+            rows.forEach(row => {
+                const select = row.querySelector('.material-select');
+                const qtyInput = row.querySelector('.material-qty');
+                const subtotalLabel = row.querySelector('.material-subtotal-val');
+                
+                const selectedOption = select.options[select.selectedIndex];
+                const pricePerUnit = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+                const qtyUsed = parseFloat(qtyInput.value) || 0;
+                
+                const subtotal = pricePerUnit * qtyUsed;
+                totalMaterialsCost += subtotal;
+                
+                subtotalLabel.innerText = formatRupiah(subtotal);
+            });
+
+            // 2. Calculate labor cost
+            let totalLaborCost = 0;
+            if (selectedWorkerId) {
+                const worker = appTenagaKerja.find(tk => tk.id === selectedWorkerId);
+                if (worker) {
+                    if (worker.tipe === "Borongan") {
+                        // Borongan is calculated per output unit
+                        totalLaborCost = worker.tarif * outputQty;
+                    } else {
+                        // Monthly system is manually simulated here (we allocate proportional daily cost: monthly / 30 / average-batch-allocation)
+                        totalLaborCost = (worker.tarif / 30) / 2; // Hypothetical allocation
+                    }
+                }
+            }
+
+            // 3. Overall cumulative total
+            const overallCost = totalMaterialsCost + totalLaborCost + overheadInput;
+            const hppPerUnit = overallCost / outputQty;
+
+            // 4. Determine Selling Pricing Structure
+            let suggestedRetail = hppPerUnit / (1 - (marginTarget / 100));
+            // Round up price to nearest Rp500 for realistic retail
+            suggestedRetail = Math.ceil(suggestedRetail / 500) * 500;
+
+            const manualPriceInput = document.getElementById('prod-harga-jual-manual');
+            let actualRetail = suggestedRetail;
+
+            if (manualPriceChanged) {
+                const manualVal = parseFloat(manualPriceInput.value) || 0;
+                if (manualVal > 0) {
+                    actualRetail = manualVal;
+                }
+            } else {
+                manualPriceInput.value = Math.round(suggestedRetail);
+            }
+
+            // Actual profit details based on actualRetail
+            const actualProfitPerUnit = actualRetail - hppPerUnit;
+            const actualMarginPercent = (actualProfitPerUnit / actualRetail) * 100;
+
+            // 5. Update Live UI Panel
+            document.getElementById('live-total-materials').innerText = formatRupiah(totalMaterialsCost);
+            document.getElementById('live-total-labor').innerText = formatRupiah(totalLaborCost);
+            document.getElementById('live-total-overhead').innerText = formatRupiah(overheadInput);
+            document.getElementById('live-overall-cost').innerText = formatRupiah(overallCost);
+            
+            document.getElementById('live-hpp-per-unit').innerText = formatRupiah(hppPerUnit);
+            document.getElementById('live-suggested-retail').innerText = formatRupiah(suggestedRetail);
+            document.getElementById('live-profit-per-unit').innerText = `${formatRupiah(actualProfitPerUnit)}`;
+            document.getElementById('live-actual-margin').innerText = isNaN(actualMarginPercent) ? '0' : actualMarginPercent.toFixed(1);
+        }
+
+        function saveProduction() {
+            const nama = document.getElementById('prod-nama').value;
+            const qty = parseFloat(document.getElementById('prod-output-qty').value);
+            const selectedWorkerId = document.getElementById('prod-tenaga').value;
+            const overheadInput = parseFloat(document.getElementById('prod-overhead-total').value) || 0;
+            const marginTarget = parseFloat(document.getElementById('prod-target-margin').value) || 0;
+            const manualPrice = parseFloat(document.getElementById('prod-harga-jual-manual').value) || 0;
+
+            // Collect material list
+            const bahanGunakan = [];
+            let validMaterials = true;
+            const rows = document.querySelectorAll('#materials-container > div');
+            
+            rows.forEach(row => {
+                const select = row.querySelector('.material-select');
+                const qtyInput = row.querySelector('.material-qty');
+                
+                const bahanId = select.value;
+                const qtyGunakan = parseFloat(qtyInput.value) || 0;
+
+                if (!bahanId) validMaterials = false;
+                bahanGunakan.push({ bahanId, qtyGunakan });
+            });
+
+            if (!validMaterials) {
+                showToast("Form tidak valid! Pastikan Anda memilih semua bahan baku utama terlebih dahulu.", "error");
+                return;
+            }
+
+            // Calculations
+            let totalBiayaBahan = 0;
+            bahanGunakan.forEach(bg => {
+                const bb = appBahanBaku.find(b => b.id === bg.bahanId);
+                if (bb) {
+                    const pricePerUnit = bb.harga / bb.konversi;
+                    totalBiayaBahan += pricePerUnit * bg.qtyGunakan;
+                }
+            });
+
+            let totalBiayaTenaga = 0;
+            if (selectedWorkerId) {
+                const worker = appTenagaKerja.find(tk => tk.id === selectedWorkerId);
+                if (worker) {
+                    totalBiayaTenaga = worker.tipe === "Borongan" ? worker.tarif * qty : (worker.tarif / 60);
+                }
+            }
+
+            const totalHpp = totalBiayaBahan + totalBiayaTenaga + overheadInput;
+            const hppPerUnit = totalHpp / qty;
+            const actualProfitPerUnit = manualPrice - hppPerUnit;
+            const marginPersen = parseFloat(((actualProfitPerUnit / manualPrice) * 100).toFixed(1)) || 0;
+
+            const newProduction = {
+                id: 'p-' + Date.now(),
+                nama,
+                qty,
+                bahanGunakan,
+                tenagaId: selectedWorkerId,
+                overheadTotal: overheadInput,
+                targetMargin: marginTarget,
+                totalBiayaBahan,
+                totalBiayaTenaga,
+                totalBiayaOverhead: overheadInput,
+                totalHpp,
+                hppPerUnit,
+                hargaJualPilihan: manualPrice,
+                marginPersen
+            };
+
+            appProduksi.push(newProduction);
+            saveToLocal();
+            renderAllViews();
+            updateCharts();
+            
+            showToast("Formula & hasil HPP baru telah didaftarkan ke Laporan!");
+            switchTab('laporanhpp');
+        }
+
+        // --- 9. LAPORAN HPP VIEW LOGIC ---
+        function renderLaporanHpp() {
+            const container = document.getElementById('table-laporanhpp');
+            container.innerHTML = '';
+
+            let totalHppValue = 0;
+            let totalMargin = 0;
+
+            appProduksi.forEach(prod => {
+                totalHppValue += prod.totalHpp;
+                totalMargin += prod.marginPersen;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-4 pl-6 font-bold text-slate-800">${prod.nama}</td>
+                    <td class="p-4 text-center text-slate-500">${prod.qty} unit</td>
+                    <td class="p-4 text-right">${formatRupiah(prod.totalBiayaBahan)}</td>
+                    <td class="p-4 text-right">${formatRupiah(prod.totalBiayaTenaga)}</td>
+                    <td class="p-4 text-right">${formatRupiah(prod.totalBiayaOverhead)}</td>
+                    <td class="p-4 text-right"><span class="bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-full font-bold text-xs">${formatRupiah(prod.hppPerUnit)}</span></td>
+                    <td class="p-4 text-right font-semibold text-blue-600">${formatRupiah(prod.hargaJualPilihan)}</td>
+                    <td class="p-4 text-center">
+                        <span class="${prod.marginPersen >= 10 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'} px-2.5 py-1 rounded-full font-bold text-xs">
+                            ${prod.marginPersen}%
+                        </span>
+                    </td>
+                    <td class="p-4 text-center">
+                        <button onclick="deleteProduksi('${prod.id}')" class="text-red-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-all">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+
+            // Update stats
+            const avgMargin = appProduksi.length > 0 ? (totalMargin / appProduksi.length).toFixed(1) : 0;
+            document.getElementById('report-avg-margin').innerText = avgMargin + '%';
+            document.getElementById('report-total-hpp-value').innerText = formatRupiah(totalHppValue);
+        }
+
+        function deleteProduksi(id) {
+            if (confirm("Hapus resep produk & hasil HPP ini dari laporan?")) {
+                appProduksi = appProduksi.filter(p => p.id !== id);
+                saveToLocal();
+                renderAllViews();
+                updateCharts();
+                showToast("Laporan produksi terhapus.", "info");
+            }
+        }
+
+        function exportToCSV() {
+            if (appProduksi.length === 0) {
+                showToast("Laporan kosong! Tidak ada data untuk diekspor.", "error");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Nama Produk,Kuantitas Batch,Biaya Bahan (Total),Biaya Tenaga Kerja (Total),Biaya Overhead (Total),HPP per Unit,Harga Jual Terpilih,Margin Persen\n";
+
+            appProduksi.forEach(p => {
+                csvContent += `"${p.nama}",${p.qty},${p.totalBiayaBahan},${p.totalBiayaTenaga},${p.totalBiayaOverhead},${Math.round(p.hppPerUnit)},${p.hargaJualPilihan},${p.marginPersen}%\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Laporan_HPP_Sembako_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Berhasil mengekspor Laporan HPP ke CSV!");
+        }
+
+        // --- 10. DASHBOARD STATS CARD ---
+        function renderDashboardStats() {
+            // Count total raw materials value
+            let totalMaterialsValue = 0;
+            appBahanBaku.forEach(bb => totalMaterialsValue += bb.harga);
+
+            document.getElementById('stat-total-bahan').innerText = `${appBahanBaku.length} Item`;
+            document.getElementById('stat-total-bahan-value').innerText = `Est. Nilai: ${formatRupiah(totalMaterialsValue)}`;
+
+            // Labor headcount
+            document.getElementById('stat-total-tenaga').innerText = `${appTenagaKerja.length} Orang`;
+
+            // Operational overhead monthly
+            let totalOverheadValue = 0;
+            appOperasional.forEach(op => totalOverheadValue += op.biaya);
+            document.getElementById('stat-total-operasional').innerText = formatRupiah(totalOverheadValue);
+
+            // Total custom recipes formulated
+            document.getElementById('stat-total-produk').innerText = `${appProduksi.length} Resep`;
+            
+            // Average margin
+            let totalMargin = 0;
+            appProduksi.forEach(p => totalMargin += p.marginPersen);
+            const avgMargin = appProduksi.length > 0 ? (totalMargin / appProduksi.length).toFixed(1) : 0;
+            document.getElementById('stat-avg-margin').innerText = `Rata-rata Margin: ${avgMargin}%`;
+
+            // Populate dashboard simple list
+            const container = document.getElementById('dashboard-product-table');
+            container.innerHTML = '';
+
+            if (appProduksi.length === 0) {
+                container.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400 italic">Belum ada produk terformulasi. Silahkan masuk ke menu Produksi Baru.</td></tr>`;
+                return;
+            }
+
+            appProduksi.slice(0, 5).forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition-all";
+                tr.innerHTML = `
+                    <td class="py-3.5 text-left font-bold text-slate-700">${p.nama}</td>
+                    <td class="py-3.5 text-right font-semibold text-slate-500">${formatRupiah(p.totalBiayaBahan / p.qty)} <span class="text-[10px] text-slate-400 font-normal">/unit</span></td>
+                    <td class="py-3.5 text-right font-semibold text-slate-500">${formatRupiah(p.totalBiayaTenaga / p.qty)} <span class="text-[10px] text-slate-400 font-normal">/unit</span></td>
+                    <td class="py-3.5 text-right font-semibold text-slate-500">${formatRupiah(p.totalBiayaOverhead / p.qty)} <span class="text-[10px] text-slate-400 font-normal">/unit</span></td>
+                    <td class="py-3.5 text-right font-extrabold text-emerald-600">${formatRupiah(p.hppPerUnit)}</td>
+                    <td class="py-3.5 text-right font-extrabold text-blue-600">${formatRupiah(p.hargaJualPilihan)}</td>
+                    <td class="py-3.5 text-center">
+                        <span class="${p.marginPersen >= 10 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'} px-2.5 py-0.5 rounded-full font-bold text-xs">
+                            ${p.marginPersen}%
+                        </span>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+        }
+
+
+        // --- 11. CHART.JS INTEGRATION ---
+        let barChartInstance = null;
+        let doughnutChartInstance = null;
+
+
+        function initCharts() {
+            // Chart 1: HPP vs Jual Bar Chart
+            const ctxBar = document.getElementById('chartHppJual').getContext('2d');
+            barChartInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Modal HPP (Rp)',
+                            data: [],
+                            backgroundColor: 'rgba(16, 185, 129, 0.85)', // emerald
+                            borderRadius: 6,
+                        },
+                        {
+                            label: 'Harga Jual (Rp)',
+                            data: [],
+                            backgroundColor: 'rgba(59, 130, 246, 0.85)', // blue
+                            borderRadius: 6,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { font: { family: 'Inter', weight: 500 } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { family: 'Inter' } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter' } }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Komposisi Biaya Doughnut
+            const ctxDoughnut = document.getElementById('chartBiayaKomposisi').getContext('2d');
+            doughnutChartInstance = new Chart(ctxDoughnut, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Bahan Baku', 'Tenaga Kerja', 'Operasional'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            '#10b981', // emerald
+                            '#8b5cf6', // purple
+                            '#f59e0b'  // amber
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { family: 'Inter', weight: 500 } }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            updateCharts();
+        }
+
+
+        function updateCharts() {
+            if (!barChartInstance || !doughnutChartInstance) return;
+
+            // Gather Data for Bar Chart
+            const productNames = appProduksi.map(p => p.nama);
+            const hppData = appProduksi.map(p => p.hppPerUnit);
+            const jualData = appProduksi.map(p => p.hargaJualPilihan);
+
+            barChartInstance.data.labels = productNames;
+            barChartInstance.data.datasets[0].data = hppData;
+            barChartInstance.data.datasets[1].data = jualData;
+            barChartInstance.update();
+
+            // Gather Data for Doughnut Chart
+            let totalMaterials = 0;
+            let totalLabor = 0;
+            let totalOverhead = 0;
+
+            appProduksi.forEach(p => {
+                totalMaterials += p.totalBiayaBahan;
+                totalLabor += p.totalBiayaTenaga;
+                totalOverhead += p.totalBiayaOverhead;
+            });
+
+            // Fallback to basic overhead/materials values if no production exists yet
+            if (appProduksi.length === 0) {
+                appBahanBaku.forEach(bb => totalMaterials += bb.harga);
+                appOperasional.forEach(op => totalOverhead += op.biaya);
+            }
+
+            doughnutChartInstance.data.datasets[0].data = [totalMaterials, totalLabor, totalOverhead];
+            doughnutChartInstance.update();
+        }
+    </script>
+</body>
+</html>
